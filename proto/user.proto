@@ -13,7 +13,27 @@ message UserResultStream {
   User user = 2;
 }
 
+message Users {
+  repeated User user = 1;
+}
+
 service UserService {
-  rpc AddUser (User) returns (User);
-  rpc AddUserVerbose (User) returns (stream UserResultStream);
+  //gRPC - API "unary": Envia uma request e recebe uma response
+  rpc AddUser (User) returns (User); 
+
+  //gRPC - API "Server streaming": Envia uma request, mas a response não precisa estar 100% pronta
+  //Exemplo: uma função que tem um cálculo muito grande e longo, em vez do client esperar o cálculo ser 100% concluído,
+  // o server pode ir mandando a resposta aos poucos do que já foi concluído
+  // podemos ir pegando dados parciais do response, até ele fechar a conexão
+  rpc AddUserVerbose (User) returns (stream UserResultStream); 
+
+  //gRPC - API "Client streaming"
+  //Em vez de mandar toda a informação de uma vez para o servidor, eu posso ir mandando essas informações aos poucos
+  //até que chega num momento que o server envia a resposta
+  rpc AddUsers(stream User) returns (Users);
+
+  //gRPC - API "Bi dorectopmaç streaming"
+  //O client vai enviando requests e o servidor vai enviando responses
+  //Nesse caso, temos streaming dos dois lados
+  rpc AddUserStreamBoth (stream User) returns (stream UserResultStream); //bidirectional streaming
 }
